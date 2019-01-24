@@ -1,0 +1,16 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+float _t;
+StructuredBuffer<float3> _baseVertices;
+RWStructuredBuffer<float3> _skinnedVertices;
+
+float3 skin(float3 baseVertex, float t) {
+	return baseVertex * t;
+}
+
+[numthreads(8,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	_skinnedVertices[id.x] = skin(_baseVertices[id.x], _t);
+}
