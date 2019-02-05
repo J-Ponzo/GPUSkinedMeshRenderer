@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GPUSkinningManager : Singleton<GPUSkinningManager>
+public class GPUSkeletalManager : Singleton<GPUSkeletalManager>
 {
     public List<GPUSkeletalInst> registeredInstances;
 

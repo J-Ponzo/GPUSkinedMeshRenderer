@@ -8,7 +8,7 @@ public class GPUSkeletalInst : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        int index = GPUSkinningManager.Instance.Register(this);
+        int index = GPUSkeletalManager.Instance.Register(this);
         if (index >= 0)
         {
             MeshFilter meshFilter = GetComponent<MeshFilter>();
@@ -23,7 +23,7 @@ public class GPUSkeletalInst : MonoBehaviour
 
             //Set compute buffer on material
             MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-            ComputeBuffer buffer = GPUSkinningManager.Instance._skinnedVerticesBuffer;
+            ComputeBuffer buffer = GPUSkeletalManager.Instance._skinnedVerticesBuffer;
             meshRenderer.material.SetBuffer("_skinnedVertices", buffer);
         } else
         {
