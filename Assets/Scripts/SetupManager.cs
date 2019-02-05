@@ -7,6 +7,8 @@ public class SetupManager : Singleton<SetupManager>
     protected SetupManager() { }
 
     public GameObject prefab;
+    public GameObject model;
+    public Avatar avatar;
     public AnimationClip clip;
     public int nbInsatances;
     public float instanciationRadius;
