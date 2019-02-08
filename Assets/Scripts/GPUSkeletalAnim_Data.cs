@@ -13,7 +13,7 @@ public class GPUSkeletalAnim_Data : ScriptableObject
     //Baked Data
     public float bake_samplingDelta;
     public float bake_duration;
-    public int bake_nbBones; 
+    public int bake_nbBones;
     public Matrix4x4[] bake_data;
 
 
@@ -23,9 +23,10 @@ public class GPUSkeletalAnim_Data : ScriptableObject
         GameObject skelModel = Instantiate(model);
         Animator skelAnimator = skelModel.GetComponent<Animator>();
         SkinnedMeshRenderer skelMeshRenderer = skelModel.GetComponentInChildren<SkinnedMeshRenderer>();
+        Mesh mesh = skelMeshRenderer.sharedMesh;
         AnimationClip clip = skelAnimator.GetCurrentAnimatorClipInfo(0)[0].clip;
 
-        //Bake data
+        //Bake anim data
         bake_samplingDelta = samplingDelta;
         bake_duration = clip.length;
         bake_nbBones = skelMeshRenderer.bones.Length;
@@ -37,7 +38,7 @@ public class GPUSkeletalAnim_Data : ScriptableObject
             for (int i = 0; i < skelMeshRenderer.bones.Length; i++)
             {
                 Transform bone = skelMeshRenderer.bones[i];
-                bake_data[idx++] = bone.localToWorldMatrix;
+                bake_data[idx++] = bone.localToWorldMatrix * mesh.bindposes[i];
             }
         }
 

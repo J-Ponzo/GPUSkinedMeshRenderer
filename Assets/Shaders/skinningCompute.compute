@@ -1,17 +1,44 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
 
-float _t;
+struct BoneWeightsStruct {
+	int boneIdx_0;
+	int boneIdx_1;
+	int boneIdx_2;
+	int boneIdx_3;
+	float boneWeight_0;
+	float boneWeight_1;
+	float boneWeight_2;
+	float boneWeight_3;
+};
+
 int _instVCount;
 StructuredBuffer<float3> _baseVertices;
+StructuredBuffer<BoneWeightsStruct> _boneWeights;
+
+float _t;
+int _nbPoses;
+int _nbBones;
+StructuredBuffer<float4x4> _animData;
+
 RWStructuredBuffer<float3> _skinnedVertices;
 
-float3 skin(float3 baseVertex, float t) {
-	return baseVertex * t;
+float3 skin(float3 baseVertex, BoneWeightsStruct boneWeights, float t) {
+	int srcPoseIdx = (int)((float)_nbPoses * t);
+	int srcPose_start = srcPoseIdx * _nbBones;
+	int dstPose_start = srcPose_start + _nbBones;
+
+	float deltaT = 1. / (float)_nbPoses;
+	float actualT = t - (deltaT * srcPoseIdx);
+	float4x4 M1 = _animData[srcPose_start + boneWeights.boneIdx_0];
+	float4x4 M2 = _animData[dstPose_start + boneWeights.boneIdx_0];
+	float4x4 finalMatrix = M1 + (M2 - M1) * actualT;
+	float4 res = mul(finalMatrix, float4(baseVertex, 1.0));
+	return res.xyz;
 }
 
-[numthreads(8,1,1)]
+[numthreads(1024,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-	_skinnedVertices[id.x] = skin(_baseVertices[id.x % _instVCount], _t);
+	_skinnedVertices[id.x] = skin(_baseVertices[id.x % _instVCount], _boneWeights[id.x % _instVCount], _t);
 }
